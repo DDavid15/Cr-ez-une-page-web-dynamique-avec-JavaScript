@@ -1,0 +1,357 @@
+/* CSS Reset by Eric Meyer - v2.0 | 20110126 | Public Domain */
+html,
+body,
+div,
+span,
+applet,
+object,
+iframe,
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+p,
+blockquote,
+pre,
+a,
+abbr,
+acronym,
+address,
+big,
+cite,
+code,
+del,
+dfn,
+em,
+img,
+ins,
+kbd,
+q,
+s,
+samp,
+small,
+strike,
+strong,
+sub,
+sup,
+tt,
+var,
+b,
+u,
+i,
+center,
+dl,
+dt,
+dd,
+ol,
+ul,
+li,
+fieldset,
+form,
+label,
+legend,
+table,
+caption,
+tbody,
+tfoot,
+thead,
+tr,
+th,
+td,
+article,
+aside,
+canvas,
+details,
+embed,
+figure,
+figcaption,
+footer,
+header,
+hgroup,
+menu,
+nav,
+output,
+ruby,
+section,
+summary,
+time,
+mark,
+audio,
+video {
+  margin: 0;
+  padding: 0;
+  border: 0;
+  font-size: 100%;
+  font: inherit;
+  vertical-align: baseline;
+}
+
+/* HTML5 display-role reset for older browsers */
+article,
+aside,
+details,
+figcaption,
+figure,
+footer,
+header,
+hgroup,
+menu,
+nav,
+section {
+  display: block;
+}
+
+body {
+  line-height: 1;
+  max-width: 1140px;
+  margin: auto;
+  font-family: "Work Sans", sans-serif;
+  font-size: 14px;
+}
+
+ol,
+ul {
+  list-style: none;
+}
+
+blockquote,
+q {
+  quotes: none;
+}
+
+blockquote::before,
+blockquote::after,
+q::before,
+q::after {
+  content: "";
+}
+
+table {
+  border-collapse: collapse;
+  border-spacing: 0;
+}
+
+/* General Styling */
+header {
+  display: flex;
+  justify-content: space-between;
+  margin: 50px 0;
+}
+
+section {
+  margin: 50px 0;
+}
+
+h1 {
+  display: flex;
+  flex-direction: column;
+  font-family: "Syne", sans-serif;
+  font-size: 22px;
+  font-weight: 800;
+  color: #b1663c;
+  text-align: center;
+  justify-content: center;
+}
+
+h1 > span {
+  font-family: "Work Sans", sans-serif;
+  font-size: 10px;
+  letter-spacing: 0.1em;
+}
+
+h2 {
+  font-family: "Syne", sans-serif;
+  font-weight: 700;
+  font-size: 30px;
+  color: #1d6154;
+}
+
+/* Navigation */
+nav ul {
+  display: flex;
+  align-items: center;
+}
+
+nav li {
+  padding: 0 10px;
+  font-size: 1.2em;
+}
+
+li:hover,
+.login-header:hover {
+  color: #b1663c;
+}
+
+a {
+  text-decoration: none;
+  color: black;
+  cursor: default;
+}
+
+.instagram {
+  width: 20px;
+}
+/* Login Section */
+.login {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin: 50px 0;
+}
+
+.login form {
+  display: flex;
+  flex-direction: column;
+  width: 379px;
+}
+
+#email,
+#password {
+  height: 51px;
+  box-shadow: 0px 4px 14px 0px rgba(0, 0, 0, 0.09);
+  border: none;
+}
+
+#submitBtn {
+  width: 179px;
+  height: 35px;
+  border: none;
+}
+
+.login label {
+  margin: 50px 0 5px 0;
+}
+
+#forget-password {
+  text-decoration: underline;
+}
+
+/* Introduction Section */
+#introduction {
+  display: flex;
+  align-items: center;
+}
+
+#introduction figure,
+#introduction article {
+  flex: 1;
+}
+
+#introduction img {
+  display: block;
+  margin: auto;
+  width: 80%;
+}
+
+#introduction h2 {
+  margin-bottom: 1em;
+}
+
+#introduction p {
+  margin-bottom: 0.5em;
+}
+
+/* Portfolio Section */
+#portfolio h2 {
+  text-align: center;
+  margin-bottom: 1em;
+}
+
+.filters {
+  display: flex;
+  justify-content: center;
+  margin: 2em 0;
+}
+
+.filters button {
+  font-family: "Syne", sans-serif;
+  font-weight: 700;
+  font-size: 1.2em;
+  color: #1d6154;
+  background-color: white;
+  border: 1px solid #1d6154;
+  border-radius: 60px;
+  padding: 0 1em;
+  height: 38px;
+  margin: 0 0.5em;
+}
+
+.filters button:first-child {
+  color: white;
+  background-color: #1d6154;
+}
+
+.gallery {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 20px;
+  width: 100%;
+}
+
+.gallery img {
+  width: 100%;
+}
+
+/* Contact Section */
+#contact {
+  width: 50%;
+  margin: auto;
+}
+
+#contact > * {
+  text-align: center;
+}
+
+#contact h2 {
+  margin-bottom: 20px;
+}
+
+#contact form {
+  display: flex;
+  flex-direction: column;
+  text-align: left;
+  margin-top: 30px;
+}
+
+#contact label {
+  margin: 2em 0 1em;
+}
+
+#contact input,
+#contact textarea {
+  border: none;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.09);
+}
+
+#contact input {
+  height: 50px;
+  font-size: 1.2em;
+}
+
+input[type="submit"] {
+  font-family: "Syne", sans-serif;
+  font-weight: 700;
+  color: white;
+  background-color: #1d6154;
+  width: 180px;
+  text-align: center;
+  border-radius: 60px;
+  margin: 2em auto;
+}
+
+/* Footer */
+footer nav ul {
+  display: flex;
+  justify-content: flex-end;
+  margin: 2em;
+}
+
+footer nav ul li {
+  font-size: 14px;
+}
+/* Utility */
+.strong {
+  font-weight: bold;
+}
