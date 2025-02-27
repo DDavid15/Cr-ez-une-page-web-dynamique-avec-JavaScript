@@ -95,7 +95,6 @@ details,
 figcaption,
 figure,
 footer,
-header,
 hgroup,
 menu,
 nav,
@@ -109,6 +108,18 @@ body {
   margin: auto;
   font-family: "Work Sans", sans-serif;
   font-size: 14px;
+}
+
+header {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  margin: 0 0 50px 0;
+}
+
+header .login-header {
+  display: flex;
+  justify-content: space-between;
 }
 
 ol,
@@ -134,10 +145,10 @@ table {
 }
 
 /* General Styling */
-header {
+.container {
   display: flex;
   justify-content: space-between;
-  margin: 50px 0;
+  margin: 0 0 50px 0;
 }
 
 section {
@@ -254,11 +265,82 @@ a {
 }
 
 /* Portfolio Section */
-#portfolio h2 {
-  text-align: center;
+.portfolio-header {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 1em;
+  gap: 33px;
+}
+
+/* Admin Section */
+.administrator-header {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: rgba(0, 0, 0, 1);
+  width: 100%;
+  height: 59px;
+}
+
+.administrator-header p {
+  color: white;
+  margin-left: 1em;
+}
+/* Modal */
+.modal-container nav {
+  display: flex;
+  align-content: center;
+  gap: 1em;
+}
+.modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.3);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+.modal-content {
+  background-color: rgba(255, 255, 255, 1);
+  width: 630px;
+  height: 688px;
+  border-radius: 10px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+.modal-header {
+  display: flex;
+  justify-content: flex-end;
+}
+.close-modal {
+  align-self: flex-end;
+  margin: 2em;
+}
+.modal-footer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+.line-decorative {
+  align-self: center;
   margin-bottom: 1em;
 }
 
+#portfolio input[type="submit"] {
+  width: 237px;
+  height: 36px;
+  margin-bottom: 3em;
+}
+
+/* Filters */
 .filters {
   display: flex;
   justify-content: center;
@@ -283,6 +365,7 @@ a {
   background-color: #1d6154;
 }
 
+/* Gallery */
 .gallery {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
@@ -319,6 +402,7 @@ a {
   margin: 2em 0 1em;
 }
 
+#portfolio input,
 #contact input,
 #contact textarea {
   border: none;
@@ -330,12 +414,15 @@ a {
   font-size: 1.2em;
 }
 
+#contact input[type="submit"] {
+  width: 180px;
+}
+
 input[type="submit"] {
   font-family: "Syne", sans-serif;
   font-weight: 700;
   color: white;
   background-color: #1d6154;
-  width: 180px;
   text-align: center;
   border-radius: 60px;
   margin: 2em auto;

@@ -110,3 +110,103 @@ function showError(message) {
 
 // 🚀 Lancement du script lorsque la page est chargée
 document.addEventListener("DOMContentLoaded", fetchWorks);
+
+//Gérer l'affichage admin
+document.addEventListener("DOMContentLoaded", function () {
+  const loginLink = document.querySelector(".login-header"); // Sélection du bouton Login
+  const adminHeader = document.querySelector(".administrator-header"); // Sélection de l'admin header
+  const modalTrigger = document.querySelector(".js-modal"); // Sélection du bouton d'ouverture de la modal
+  const modalTriggerIcon = document.querySelector(".modal-icon");
+
+  function checkLoginStatus() {
+    const token = localStorage.getItem("token");
+    if (token) {
+      // ✅ L'utilisateur est connecté
+      loginLink.textContent = "logout";
+      loginLink.classList.add("logout");
+      loginLink.href = "#"; // Désactive le lien vers login.html
+      loginLink.addEventListener("click", logout);
+
+      // ✅ Afficher les éléments réservés aux administrateurs
+      if (adminHeader) adminHeader.style.display = "flex";
+      if (modalTrigger) modalTrigger.style.display = "flex";
+    } else {
+      // ❌ L'utilisateur n'est pas connecté
+      loginLink.textContent = "login";
+      loginLink.classList.remove("logout");
+      loginLink.href = "login.html"; // Redirige vers la page de connexion
+
+      // ❌ Cacher les éléments réservés aux administrateurs
+      if (adminHeader) adminHeader.style.display = "none";
+      if (modalTrigger) modalTrigger.style.display = "none";
+      if (modalTriggerIcon) modalTriggerIcon.style.display = "none";
+    }
+  }
+
+  function logout(event) {
+    event.preventDefault(); // Empêche la navigation
+    localStorage.removeItem("token"); // Supprime le token
+    window.location.reload(); // Recharge la page
+  }
+
+  checkLoginStatus();
+});
+
+// Fenêtre Modal
+let modal = null;
+
+const openModal = function (e) {
+  e.preventDefault();
+
+  const target = document.querySelector(e.target.getAttribute(`href`));
+  if (!target) return;
+
+  target.style.display = `flex`;
+  target.removeAttribute(`aria-hidden`);
+  target.setAttribute(`aria-modal`, `true`);
+  modal = target;
+
+  // Ajout des écouteurs d'événements
+  modal.addEventListener(`click`, closeModal);
+  modal.querySelector(`.close-modal`).addEventListener(`click`, closeModal);
+
+  // Vérifie si l'écouteur existe déjà avant d'en ajouter un
+  document.addEventListener(`keydown`, closeOnEscape);
+};
+
+const closeModal = function (e) {
+  if (modal === null) return;
+  e.preventDefault();
+
+  // Vérifie si on clique en dehors du contenu ou sur la croix de fermeture
+  if (
+    e.type === "keydown" ||
+    e.target === modal ||
+    e.target.classList.contains("close-modal")
+  ) {
+    modal.style.display = `none`;
+    modal.setAttribute(`aria-hidden`, `true`);
+    modal.removeAttribute(`aria-modal`);
+    modal.removeEventListener(`click`, closeModal);
+    modal
+      .querySelector(`.close-modal`)
+      .removeEventListener(`click`, closeModal);
+
+    // Suppression de l'écouteur de touche Échap
+    document.removeEventListener(`keydown`, closeOnEscape);
+
+    modal = null;
+  }
+};
+
+// Fonction pour fermer la modale avec la touche Échap
+const closeOnEscape = function (e) {
+  if (e.key === "Escape" || e.key === "Esc") {
+    closeModal(e);
+  }
+};
+
+// Ajoute les événements aux liens d'ouverture
+document.querySelectorAll(`.js-modal`).forEach((a) => {
+  a.addEventListener(`click`, openModal);
+});

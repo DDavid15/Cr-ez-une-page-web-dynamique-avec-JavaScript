@@ -16,21 +16,27 @@
   </head>
   <body>
     <header>
-      <h1>Sophie Bluel <span>Architecte d'intérieur</span></h1>
-      <nav>
-        <ul>
-          <li>projets</li>
-          <li>contact</li>
-          <li><a href="login.html" class="login login-header">login</a></li>
-          <li>
-            <img
-              src="./assets/icons/instagram.png"
-              alt="Instagram"
-              class="instagram"
-            />
-          </li>
-        </ul>
-      </nav>
+      <div class="administrator-header" style="display: none">
+        <img src="/FrontEnd/assets/images/Vector.png" alt="Modifier" />
+        <p>Mode édition</p>
+      </div>
+      <div class="container">
+        <h1>Sophie Bluel <span>Architecte d'intérieur</span></h1>
+        <nav>
+          <ul>
+            <li>projets</li>
+            <li>contact</li>
+            <li><a href="login.html" class="login login-header">login</a></li>
+            <li>
+              <img
+                src="./assets/icons/instagram.png"
+                alt="Instagram"
+                class="instagram"
+              />
+            </li>
+          </ul>
+        </nav>
+      </div>
     </header>
     <main>
       <section id="introduction">
@@ -57,7 +63,48 @@
         </article>
       </section>
       <section id="portfolio">
-        <h2>Mes Projets</h2>
+        <div class="portfolio-header">
+          <h2>Mes Projets</h2>
+          <div class="modal-container">
+            <nav>
+              <img
+                src="/FrontEnd/assets/images/Group.png"
+                alt="Modifier"
+                class="modal-icon"
+              />
+              <a href="#modal" class="js-modal">modifier</a>
+            </nav>
+            <aside
+              id="modal"
+              class="modal"
+              aria-hidden="true"
+              role="dialog"
+              aria-modal="false"
+              aria-label="title-modal"
+              style="display: none"
+            >
+              <div class="modal-content">
+                <div class="modal-header">
+                  <h1 id="title-modal"></h1>
+                  <img
+                    src="/FrontEnd/assets/images/xmark.png"
+                    alt="fermer"
+                    class="close-modal"
+                  />
+                </div>
+                <div class="modal-body"></div>
+                <div class="modal-footer">
+                  <img
+                    src="/FrontEnd/assets/images/Line 1.png"
+                    alt="line"
+                    class="line-decorative"
+                  />
+                  <input type="submit" value="" />
+                </div>
+              </div>
+            </aside>
+          </div>
+        </div>
         <div class="filters"></div>
         <div class="gallery"></div>
       </section>
