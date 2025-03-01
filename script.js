@@ -16,6 +16,7 @@ async function fetchWorks() {
     if (!response.ok) throw new Error(`Erreur : ${response.statusText}`);
 
     cachedWorks = await response.json();
+    console.log(cachedWorks);
     displayWorks(cachedWorks);
     extractAndDisplayCategories(cachedWorks);
   } catch (error) {
@@ -152,61 +153,230 @@ document.addEventListener("DOMContentLoaded", function () {
   checkLoginStatus();
 });
 
-// Fenêtre Modal
+// 🎯 Gestion de l'ouverture et fermeture de la modale
 let modal = null;
 
 const openModal = function (e) {
   e.preventDefault();
 
-  const target = document.querySelector(e.target.getAttribute(`href`));
-  if (!target) return;
+  // Sélection de la modale
+  modal = document.querySelector(e.target.getAttribute("href"));
 
-  target.style.display = `flex`;
-  target.removeAttribute(`aria-hidden`);
-  target.setAttribute(`aria-modal`, `true`);
-  modal = target;
+  if (!modal) {
+    console.error("Erreur : La modale n'a pas été trouvée.");
+    return;
+  }
 
-  // Ajout des écouteurs d'événements
-  modal.addEventListener(`click`, closeModal);
-  modal.querySelector(`.close-modal`).addEventListener(`click`, closeModal);
+  modal.style.display = "flex"; // 🔹 Affiche la modale
+  modal.removeAttribute("aria-hidden");
+  modal.setAttribute("aria-modal", "true");
 
-  // Vérifie si l'écouteur existe déjà avant d'en ajouter un
-  document.addEventListener(`keydown`, closeOnEscape);
+  // Ajout des événements pour fermer la modale
+  modal.addEventListener("click", closeModal);
+  modal.querySelector(".close-modal").addEventListener("click", closeModal);
+  document.addEventListener("keydown", closeOnEscape);
+
+  // Lancement de la modale avec la première étape
+  currentStep = 0;
+  updateModalContent(currentStep);
 };
 
 const closeModal = function (e) {
-  if (modal === null) return;
+  if (!modal) return;
   e.preventDefault();
 
-  // Vérifie si on clique en dehors du contenu ou sur la croix de fermeture
+  // Vérifie si on clique en dehors de la modale ou sur le bouton de fermeture
   if (
     e.type === "keydown" ||
     e.target === modal ||
     e.target.classList.contains("close-modal")
   ) {
-    modal.style.display = `none`;
-    modal.setAttribute(`aria-hidden`, `true`);
-    modal.removeAttribute(`aria-modal`);
-    modal.removeEventListener(`click`, closeModal);
+    modal.style.display = "none";
+    modal.setAttribute("aria-hidden", "true");
+    modal.removeAttribute("aria-modal");
+    modal.removeEventListener("click", closeModal);
     modal
-      .querySelector(`.close-modal`)
-      .removeEventListener(`click`, closeModal);
-
-    // Suppression de l'écouteur de touche Échap
-    document.removeEventListener(`keydown`, closeOnEscape);
-
+      .querySelector(".close-modal")
+      .removeEventListener("click", closeModal);
+    document.removeEventListener("keydown", closeOnEscape);
     modal = null;
   }
 };
 
-// Fonction pour fermer la modale avec la touche Échap
+// 📌 Fonction pour fermer la modale avec la touche "Échap"
 const closeOnEscape = function (e) {
   if (e.key === "Escape" || e.key === "Esc") {
     closeModal(e);
   }
 };
 
-// Ajoute les événements aux liens d'ouverture
-document.querySelectorAll(`.js-modal`).forEach((a) => {
-  a.addEventListener(`click`, openModal);
+// 📌 Ajoute l'événement aux boutons qui ouvrent la modale
+document.querySelectorAll(".js-modal").forEach((btn) => {
+  btn.addEventListener("click", openModal);
 });
+
+// Sélection des éléments
+const nextButton = document.querySelector(".next-button");
+const prevButton = document.querySelector(".prev-button");
+const modalBody = document.querySelector(".modal-body");
+const titleModal = document.querySelector(".modal-header h2");
+
+let currentStep = 0;
+let selectedFile = null; // Stocker le fichier choisi
+
+// 🚀 Fonction de mise à jour du contenu de la modale
+function updateModalContent(step) {
+  if (!titleModal || !modalBody) {
+    console.error("Erreur : Élément non trouvé !");
+    return;
+  }
+
+  // 🎨 Mise à jour selon l'étape
+  if (step === 0) {
+    titleModal.textContent = "Galerie photo";
+    modalBody.innerHTML = `<div class="modal-gallery"></div>`;
+    fetchWork().then(injectGalleryModal);
+    nextButton.value = "Ajouter une photo";
+  } else if (step === 1) {
+    titleModal.textContent = "Ajout photo";
+    modalBody.innerHTML = `
+      <form class="add-photo-form">
+        <label for="file">+ Ajouter une photo</label>
+        <input type="file" id="file" accept="image/*">
+        <p id="file-name">Aucun fichier sélectionné</p>
+      </form>
+    `;
+    nextButton.value = "Suivant";
+
+    document
+      .getElementById("file")
+      .addEventListener("change", function (event) {
+        selectedFile = event.target.files[0]; // Stocke le fichier
+        if (selectedFile) {
+          document.getElementById("file-name").textContent = selectedFile.name;
+        }
+      });
+  } else if (step === 2) {
+    titleModal.textContent = "Ajout photo";
+    modalBody.innerHTML = `
+      <form class="add-photo-form">
+        <img id="preview-image" src="" alt="Aperçu de l'image" style="display: none; width: 100px;">
+        <label for="title">Titre</label>
+        <input type="text" id="title">
+        <label for="category">Catégorie</label>
+        <input type="text" id="category">
+      </form>
+    `;
+    nextButton.value = "Valider";
+
+    if (selectedFile) {
+      const reader = new FileReader();
+      reader.onload = function (e) {
+        const preview = document.getElementById("preview-image");
+        preview.src = e.target.result;
+        preview.style.display = "block";
+      };
+      reader.readAsDataURL(selectedFile);
+    }
+  }
+
+  // 🔄 Mise à jour des boutons
+  prevButton.style.display = step === 0 ? "none" : "inline-block";
+}
+
+// 🔄 Gestion des boutons "Suivant" et "Précédent"
+nextButton.addEventListener("click", () => {
+  if (currentStep < 2) {
+    currentStep++;
+    updateModalContent(currentStep);
+  } else {
+    modal.style.display = "none";
+    modal.setAttribute("aria-hidden", "true");
+    modal.removeAttribute("aria-modal");
+    modal.removeEventListener("click", closeModal);
+    modal
+      .querySelector(".close-modal")
+      .removeEventListener("click", closeModal);
+    document.removeEventListener("keydown", closeOnEscape);
+    modal = null;
+  }
+});
+
+prevButton.addEventListener("click", () => {
+  if (currentStep > 0) {
+    currentStep--;
+    updateModalContent(currentStep);
+  }
+});
+
+// 📸 Injection des images dans la galerie
+function injectGalleryModal(works) {
+  const gallery = document.querySelector(".modal-gallery");
+  if (!gallery) return;
+
+  gallery.innerHTML = "";
+
+  works.forEach((work) => {
+    const figure = document.createElement("figure");
+    figure.dataset.id = work.id;
+
+    figure.innerHTML = `<img src="${work.imageUrl}" alt="${work.title}" loading="lazy" style="width: 100%;">
+     <button class="delete-project" data-id="${work.id}">
+        <img src="/FrontEnd/assets/icons/trash.svg" alt="Supprimer" />
+      </button>
+    `;
+    gallery.appendChild(figure);
+  });
+
+  // Ajout des événements pour la suppression
+  document.querySelectorAll(".delete-project").forEach((btn) => {
+    btn.addEventListener("click", deleteProject);
+  });
+}
+
+// 🔥 Récupération des travaux depuis l'API
+async function fetchWork() {
+  try {
+    const response = await fetch("http://localhost:5678/api/works");
+    if (!response.ok) throw new Error(`Erreur : ${response.statusText}`);
+    return await response.json();
+  } catch (error) {
+    console.error("Erreur lors de la récupération des travaux :", error);
+    return [];
+  }
+}
+
+// 🏁 Initialisation de la modale à l'ouverture
+document.addEventListener("DOMContentLoaded", () => {
+  updateModalContent(currentStep);
+});
+
+async function deleteProject(event) {
+  const projectId = event.target.dataset.id;
+
+  if (!projectId) return;
+
+  // Confirmation avant suppression
+  const confirmation = confirm("Voulez-vous vraiment supprimer ce projet ?");
+  if (!confirmation) return;
+
+  try {
+    const response = await fetch(
+      `http://localhost:5678/api/works/${projectId}`,
+      {
+        method: "DELETE",
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
+          "Content-Type": "application/json",
+        },
+      }
+    );
+
+    if (!response.ok) throw new Error("Erreur lors de la suppression");
+
+    // Supprime l'élément du DOM
+    document.querySelector(`figure[data-id='${projectId}']`).remove();
+  } catch (error) {
+    console.error("Impossible de supprimer le projet :", error);
+  }
+}

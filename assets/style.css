@@ -314,16 +314,50 @@ a {
   border-radius: 10px;
   display: flex;
   flex-direction: column;
+  align-items: center;
   justify-content: space-between;
 }
 .modal-header {
   display: flex;
-  justify-content: flex-end;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+  justify-content: space-between;
+}
+.modal-interact {
+  display: flex;
+  justify-content: space-between;
+  width: 100%;
+  flex-direction: row-reverse;
+}
+.prev-button {
+  align-self: flex-start;
+  margin: 2em;
 }
 .close-modal {
   align-self: flex-end;
   margin: 2em;
 }
+
+.modal-header h2 {
+  font-family: Work Sans;
+  font-weight: 400;
+  gap: 20px;
+  font-size: 26px;
+  line-height: 30.5px;
+  color: black;
+}
+
+.modal-body {
+  width: 420px;
+}
+.modal-body .modal-gallery {
+  display: grid;
+  grid-template-columns: repeat(5, calc(440px / 5 - 20px));
+  width: 100%;
+  gap: 20px;
+}
+
 .modal-footer {
   display: flex;
   flex-direction: column;
@@ -338,6 +372,27 @@ a {
   width: 237px;
   height: 36px;
   margin-bottom: 3em;
+}
+
+/* 📌 Style des figures */
+.modal-gallery figure {
+  position: relative;
+}
+
+/* Boutton supprimer */
+.delete-project {
+  position: absolute;
+  top: 10px;
+  right: 5px;
+  background: black;
+  border: none;
+  width: 17px;
+  height: 17px;
+  border-radius: 1px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 /* Filters */
