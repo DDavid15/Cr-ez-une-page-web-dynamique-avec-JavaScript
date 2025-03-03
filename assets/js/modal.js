@@ -1,5 +1,4 @@
 // Gestion de la modale et des fichiers uploadés
-
 let modal = null;
 let currentStep = 0;
 let selectedFile = null; // Stocker le fichier sélectionné
@@ -12,12 +11,26 @@ const openModal = function (e) {
     console.error("Erreur : La modale n'a pas été trouvée.");
     return;
   }
+
   modal.style.display = "flex";
   modal.removeAttribute("aria-hidden");
   modal.setAttribute("aria-modal", "true");
+
+  // Met le focus sur le premier élément focusable
+  const focusableElements = modal.querySelectorAll(
+    'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])'
+  );
+  if (focusableElements.length) {
+    focusableElements[0].focus();
+  }
+
+  // Ajout des événements
+  document.addEventListener("keydown", trapFocus);
+  document.addEventListener("keydown", closeOnEscape, { once: true });
+
   modal.addEventListener("click", closeModal);
   modal.querySelector(".close-modal").addEventListener("click", closeModal);
-  document.addEventListener("keydown", closeOnEscape);
+
   currentStep = 0;
   updateModalContent(currentStep);
 };
@@ -25,6 +38,11 @@ const openModal = function (e) {
 // Fonction pour fermer la modale
 const closeModal = function (e) {
   if (!modal) return;
+
+  if (e.type === "keydown" && e.key !== "Escape" && e.key !== "Esc") {
+    return; // Ne ferme que si la touche "Échap" est pressée
+  }
+
   if (
     e.type === "keydown" ||
     e.target === modal ||
@@ -33,11 +51,10 @@ const closeModal = function (e) {
     modal.style.display = "none";
     modal.setAttribute("aria-hidden", "true");
     modal.removeAttribute("aria-modal");
+
     modal.removeEventListener("click", closeModal);
-    modal
-      .querySelector(".close-modal")
-      .removeEventListener("click", closeModal);
     document.removeEventListener("keydown", closeOnEscape);
+
     modal = null;
   }
 };
@@ -49,12 +66,39 @@ const closeOnEscape = function (e) {
   }
 };
 
-// Fonction de mise à jour du contenu de la modale
+// Fonction pour gérer la navigation avec la tabulation
+const trapFocus = (event) => {
+  if (!modal) return;
+
+  const focusableElements = modal.querySelectorAll(
+    'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])'
+  );
+  const firstElement = focusableElements[0];
+  const lastElement = focusableElements[focusableElements.length - 1];
+
+  if (event.key === "Tab") {
+    if (event.shiftKey) {
+      // Si Shift + Tab est pressé sur le premier élément, on revient au dernier
+      if (document.activeElement === firstElement) {
+        event.preventDefault();
+        lastElement.focus();
+      }
+    } else {
+      // Si Tab est pressé sur le dernier élément, on revient au premier
+      if (document.activeElement === lastElement) {
+        event.preventDefault();
+        firstElement.focus();
+      }
+    }
+  }
+};
+
 function updateModalContent(step) {
   const modalBody = document.querySelector(".modal-body");
   const titleModal = document.querySelector(".modal-header h2");
   const nextButton = document.querySelector(".next-button");
   const prevButton = document.querySelector(".prev-button");
+
   if (!titleModal || !modalBody) {
     console.error("Erreur : Élément non trouvé !");
     return;
@@ -65,44 +109,43 @@ function updateModalContent(step) {
     modalBody.innerHTML = `<div class="modal-gallery"></div>`;
     fetchWork().then(injectGalleryModal);
     nextButton.value = "Ajouter une photo";
-    nextButton.disabled = false; // Bouton actif en step 0
-    nextButton.classList.remove("disabled-step-1"); // Supprimer la classe grise
-    prevButton.style.display = "none"; // Cacher le bouton "Précédent" à l'étape 0
+    nextButton.disabled = false;
+    nextButton.classList.remove("disabled-step-1");
+    prevButton.style.display = "none";
   } else {
-    prevButton.style.display = "inline-block"; // Afficher le bouton aux autres étapes
+    prevButton.style.display = "inline-block";
   }
 
   if (step === 1) {
     titleModal.textContent = "Ajout photo";
     modalBody.innerHTML = `
-      <form class="add-photo-form">
-        <div class="file-upload">
-          <label for="file" id="upload-trigger" class="upload-container">
-            <img id="preview-icon" src="/FrontEnd/assets/icons/upload-icon.svg" alt="icone d'upload">
-            <p id="upload-text">+ Ajouter une photo</p>
-            <p class="upload-info">jpg, png : 4mo max</p>
-          </label>
-          <input type="file" id="file" accept="image/*" style="display: none;">
-        </div>
-        <div class="input-upload">
-          <label for="title">Titre</label>
-          <input type="text" id="title" required>
-          <label for="category">Catégories</label>
-          <select id="category" required>
-          </select>
-        </div>
-      </form>
-      <p class="error-message" style="color: red; display: none;"></p>
-    `;
+        <form class="add-photo-form">
+          <div class="file-upload">
+            <label for="file" id="upload-trigger" class="upload-container">
+              <img id="preview-icon" src="/FrontEnd/assets/icons/upload-icon.svg" alt="icone d'upload">
+              <p id="upload-text">+ Ajouter une photo</p>
+              <p class="upload-info">jpg, png : 4mo max</p>
+            </label>
+            <input type="file" id="file" accept="image/*" style="display: none;">
+          </div>
+          <div class="input-upload">
+            <label for="title">Titre</label>
+            <input type="text" id="title" required>
+            <label for="category">Catégories</label>
+            <select id="category" required></select>
+          </div>
+        </form>
+        <p class="error-message" style="color: red; display: none;"></p>
+      `;
     fetchWork().then(injectCategoryModal);
-    setTimeout(setupFileUpload, 50);
-    setTimeout(setupFormValidation, 50); // Vérification des champs
+    setupFileUpload();
+    setupFormValidation();
 
     nextButton.value = "Valider";
-    nextButton.disabled = true; // Désactiver le bouton par défaut
-    nextButton.classList.add("disabled-step-1"); // Ajouter la classe pour le Step 1
+    nextButton.disabled = true;
+    nextButton.classList.add("disabled-step-1");
 
-    nextButton.removeEventListener("click", submitForm); // Évite les doublons
+    nextButton.removeEventListener("click", submitForm);
     nextButton.addEventListener("click", submitForm);
   }
 }
@@ -161,14 +204,14 @@ function injectGalleryModal(works) {
 
 // Suppression d'un projet (clic sur le bouton ou l'image)
 async function deleteProject(event) {
-  const button = event.target.closest(".delete-project"); // Récupérer le bouton peu importe où l'on clique (image ou bouton)
+  const button = event.target.closest(".delete-project");
   if (!button) return;
 
-  const projectId = button.dataset.id; // Récupération de l'ID du projet
-
+  const projectId = parseInt(button.dataset.id, 10);
   if (!projectId) return;
 
   try {
+    // 1️⃣ Envoyer la requête API AVANT de modifier le DOM
     const response = await fetch(
       `http://localhost:5678/api/works/${projectId}`,
       {
@@ -180,17 +223,34 @@ async function deleteProject(event) {
       }
     );
 
-    if (!response.ok) throw new Error("Erreur lors de la suppression");
-
-    // Supprime l'élément du DOM (l'image et le bouton sont dans figure)
-    const figureToRemove = document.querySelector(
-      `figure[data-id='${projectId}']`
-    );
-    if (figureToRemove) {
-      figureToRemove.remove();
+    if (!response.ok) {
+      throw new Error("Erreur lors de la suppression");
     }
+
+    // 2️⃣ Mettre à jour le cache (supprimer du tableau `cachedWorks`)
+    cachedWorks = cachedWorks.filter((work) => work.id !== projectId);
+
+    // 3️⃣ Supprimer l’élément du DOM après la confirmation de l’API
+    const modalGalleryFigure = document.querySelector(
+      `.modal-gallery figure[data-id='${projectId}']`
+    );
+    if (modalGalleryFigure) {
+      modalGalleryFigure.remove();
+    }
+
+    const mainGalleryFigure = document.querySelector(
+      `.gallery figure[data-id='${projectId}']`
+    );
+    if (mainGalleryFigure) {
+      mainGalleryFigure.remove();
+    }
+
+    console.log(`✅ Projet ${projectId} supprimé avec succès`);
+
+    // 4️⃣ Mise à jour unique de la galerie principale
+    displayWorks(cachedWorks);
   } catch (error) {
-    console.error("Impossible de supprimer le projet :", error);
+    console.error("❌ Impossible de supprimer le projet :", error);
   }
 }
 
@@ -240,7 +300,7 @@ function setupFormValidation() {
     !errorMessage
   ) {
     console.error(
-      " Erreur : Un ou plusieurs éléments du formulaire sont introuvables !"
+      "❌ Erreur : Un ou plusieurs éléments du formulaire sont introuvables !"
     );
     return;
   }
@@ -250,19 +310,29 @@ function setupFormValidation() {
     const isTitleFilled = titleInput.value.trim() !== "";
     const isCategorySelected = categoryInput.value !== "";
 
-    if (isFileSelected && isTitleFilled && isCategorySelected) {
-      submitButton.disabled = false; // Activer le bouton
-      submitButton.classList.remove("disabled-step-1");
-      errorMessage.style.display = "none"; // Cacher le message d'erreur si tout est bon
-    } else {
-      submitButton.disabled = true; // Désactiver le bouton
-      submitButton.classList.add("disabled-step-1");
+    if (!isFileSelected) {
+      errorMessage.style.display = "block";
+      errorMessage.textContent = "Veuillez ajouter une image valide.";
+      submitButton.disabled = true;
+      submitButton.classList.add("disabled-step-1"); // Ajout d'une classe de désactivation
+      return;
+    }
+
+    if (!isTitleFilled || !isCategorySelected) {
       errorMessage.style.display = "block";
       errorMessage.textContent = "Tous les champs sont requis !";
+      submitButton.disabled = true;
+      submitButton.classList.add("disabled-step-1");
+      return;
     }
+
+    // ✅ Tout est valide, suppression des erreurs et activation du bouton
+    errorMessage.style.display = "none";
+    submitButton.disabled = false;
+    submitButton.classList.remove("disabled-step-1"); // Suppression de la classe de désactivation
   }
 
-  // Ajout des écouteurs d'événements pour surveiller les modifications en direct
+  // Écoute des changements sur les champs
   fileInput.addEventListener("change", checkFormValidity);
   titleInput.addEventListener("input", checkFormValidity);
   categoryInput.addEventListener("change", checkFormValidity);
@@ -271,36 +341,64 @@ function setupFormValidation() {
   checkFormValidity();
 }
 
-// Gestion de l'upload de fichiers
+// Gestion de l'upload de fichiers avec validation et feedback utilisateur
 function setupFileUpload() {
   const fileInput = document.getElementById("file");
   const uploadTrigger = document.getElementById("upload-trigger");
+  const errorMessage = document.querySelector(".error-message");
+  const submitButton = document.querySelector(".next-button");
 
-  if (!fileInput || !uploadTrigger) {
-    console.error("❌ Élément `file` ou `upload-trigger` introuvable !");
+  if (!fileInput || !uploadTrigger || !errorMessage || !submitButton) {
+    console.error("❌ Élément manquant dans le formulaire !");
     return;
   }
 
-  uploadTrigger.removeEventListener("click", handleUploadClick);
-  uploadTrigger.addEventListener("click", handleUploadClick);
+  uploadTrigger.addEventListener("click", (event) => {
+    event.preventDefault();
+    fileInput.click();
+  });
 
-  //  Gérer la prévisualisation de l'image
   fileInput.addEventListener("change", function (event) {
     const file = event.target.files[0];
 
-    if (file && file.type.startsWith("image/")) {
-      const reader = new FileReader();
-      reader.onload = function (e) {
-        uploadTrigger.innerHTML = `
-            <img src="${e.target.result}" alt="Aperçu de l'image" 
-                 id="preview-image">
-          `;
-      };
-      reader.readAsDataURL(file);
-    } else {
-      console.error("Le fichier sélectionné n'est pas une image.");
+    if (!file) return;
+
+    const validFormats = ["image/jpeg", "image/png"];
+    if (!validFormats.includes(file.type)) {
+      errorMessage.style.display = "block";
+      errorMessage.textContent =
+        "Format non supporté. Veuillez choisir un fichier JPG ou PNG.";
+      fileInput.value = "";
+      submitButton.disabled = true;
+      return;
     }
+
+    if (file.size > 4 * 1024 * 1024) {
+      errorMessage.style.display = "block";
+      errorMessage.textContent = "Fichier trop volumineux (max 4 Mo).";
+      fileInput.value = "";
+      submitButton.disabled = true;
+      return;
+    }
+
+    // Si tout est bon, afficher l'aperçu de l'image
+    errorMessage.style.display = "none";
+    submitButton.disabled = false;
+
+    const reader = new FileReader();
+    reader.onload = function (e) {
+      uploadTrigger.innerHTML = `
+          <img src="${e.target.result}" alt="Aperçu de l'image" id="preview-image">
+        `;
+    };
+    reader.readAsDataURL(file);
   });
+}
+
+// Fonction d'affichage des erreurs
+function showError(element, message) {
+  element.style.display = "block";
+  element.textContent = message;
 }
 
 // Fonction pour gérer le clic sur l'upload-trigger
@@ -317,7 +415,7 @@ document.querySelectorAll(".js-modal").forEach((btn) => {
   btn.addEventListener("click", openModal);
 });
 
-// Gestion de la soumission du formulaire
+// Fonction d'envoi des données à l'API avec mise à jour immédiate
 async function submitForm(event) {
   event.preventDefault();
 
@@ -325,18 +423,14 @@ async function submitForm(event) {
   const titleInput = document.getElementById("title");
   const categoryInput = document.getElementById("category");
   const errorMessage = document.querySelector(".error-message");
+  const successMessage = document.createElement("p");
+  successMessage.style.color = "green";
+  successMessage.style.display = "none";
+
   const token = localStorage.getItem("token");
 
-  if (!fileInput || !titleInput || !categoryInput || !errorMessage) {
-    console.error(
-      "Erreur : Un ou plusieurs champs du formulaire sont introuvables."
-    );
-    return;
-  }
-
-  if (!token) {
-    showError(errorMessage, "Vous devez être connecté pour ajouter un projet.");
-    console.error("Erreur : Aucun token trouvé.");
+  if (!fileInput.files[0] || !titleInput.value.trim() || !categoryInput.value) {
+    showError(errorMessage, "Tous les champs sont requis !");
     return;
   }
 
@@ -348,9 +442,7 @@ async function submitForm(event) {
   try {
     const response = await fetch("http://localhost:5678/api/works", {
       method: "POST",
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
+      headers: { Authorization: `Bearer ${token}` },
       body: formData,
     });
 
@@ -360,10 +452,51 @@ async function submitForm(event) {
       );
     }
 
-    console.log("Projet ajouté avec succès !");
+    const newProject = await response.json();
+
+    if (!newProject.id) {
+      throw new Error("L'API n'a pas retourné d'ID valide.");
+    }
+
+    // ✅ Ajouter le projet UNIQUEMENT s'il n'est pas déjà dans cachedWorks
+    if (!cachedWorks.some((work) => work.id === newProject.id)) {
+      cachedWorks.push(newProject);
+    }
+
+    // ✅ Mise à jour immédiate de la galerie
+    displayWorks(cachedWorks);
+
+    // ✅ Affichage du message de succès
+    successMessage.textContent = "Projet ajouté avec succès !";
+    successMessage.style.display = "block";
+    errorMessage.style.display = "none";
+
+    // ✅ Réinitialisation du formulaire après ajout
+    resetForm();
   } catch (error) {
-    console.error("Erreur lors de l'envoi du formulaire :", error);
-    showError(errorMessage, "Une erreur est survenue lors de l'envoi.");
+    console.error("❌ Erreur lors de l'envoi du formulaire :", error);
+    showError(
+      errorMessage,
+      "Une erreur est survenue lors de l'envoi. Veuillez réessayer."
+    );
+  }
+}
+
+// Fonction pour réinitialiser le formulaire après un ajout réussi
+function resetForm() {
+  document.getElementById("file").value = "";
+  document.getElementById("title").value = "";
+  document.getElementById("category").value = "";
+  document.querySelector(".next-button").disabled = true;
+
+  // ✅ Réinitialisation de l'aperçu de l'image
+  const uploadTrigger = document.getElementById("upload-trigger");
+  if (uploadTrigger) {
+    uploadTrigger.innerHTML = `
+        <img id="preview-icon" src="/FrontEnd/assets/icons/upload-icon.svg" alt="icone d'upload">
+        <p id="upload-text">+ Ajouter une photo</p>
+        <p class="upload-info">jpg, png : 4mo max</p>
+      `;
   }
 }
 

@@ -30,16 +30,18 @@ async function fetchWorks() {
 // Fonction pour afficher les travaux dans la galerie
 function displayWorks(works) {
   const gallery = document.querySelector(".gallery");
-  gallery.innerHTML = "";
+  gallery.innerHTML = ""; // ✅ Nettoyer l'ancienne galerie avant d'afficher les nouveaux projets
 
   works.forEach((work) => {
     const figure = document.createElement("figure");
     figure.innerHTML = `
-      <img src="${work.imageUrl}" alt="${work.title}" loading="lazy">
-      <figcaption>${work.title}</figcaption>
-    `;
+        <img src="${work.imageUrl}" alt="${work.title}" loading="lazy">
+        <figcaption>${work.title}</figcaption>
+      `;
     gallery.appendChild(figure);
   });
+
+  console.log("✅ Galerie mise à jour avec :", works.length, "projets");
 }
 
 // Fonction pour extraire les catégories et créer les boutons de filtre
@@ -47,38 +49,29 @@ function extractAndDisplayCategories(works) {
   const filterContainer = document.querySelector(".filters");
   filterContainer.innerHTML = "";
 
+  // Bouton "Tous" pour afficher tous les projets
   const allButton = createButton("Tous", "filter-btn", () =>
     displayWorks(works)
   );
   allButton.dataset.categoryId = "";
   filterContainer.appendChild(allButton);
 
-  const categorySet = new Set(
-    works.map((work) =>
-      JSON.stringify({
-        id: work.categoryId,
-        name: work.category.name,
-      })
-    )
-  );
+  // Utilisation d'un Map pour éviter les doublons
+  const categoryMap = new Map();
 
-  [...categorySet].forEach((catStr) => {
-    const category = JSON.parse(catStr);
-    const button = createButton(category.name, "filter-btn", () =>
-      filterWorksByCategory(works, category.id)
-    );
-    button.dataset.categoryId = category.id;
-    button.setAttribute("aria-label", `Filtrer par ${category.name}`);
-    filterContainer.appendChild(button);
+  works.forEach((work) => {
+    if (work.categoryId && work.category && !categoryMap.has(work.categoryId)) {
+      categoryMap.set(work.categoryId, work.category.name);
+    }
   });
 
-  // Délégation d'événements
-  filterContainer.addEventListener("click", (event) => {
-    if (event.target.classList.contains("filter-btn")) {
-      const categoryId = event.target.dataset.categoryId;
-      if (!categoryId) return displayWorks(works); // Affiche tous les travaux
-      filterWorksByCategory(works, parseInt(categoryId));
-    }
+  categoryMap.forEach((name, id) => {
+    const button = createButton(name, "filter-btn", () =>
+      filterWorksByCategory(works, id)
+    );
+    button.dataset.categoryId = id;
+    button.setAttribute("aria-label", `Filtrer par ${name}`);
+    filterContainer.appendChild(button);
   });
 }
 
@@ -118,6 +111,7 @@ document.addEventListener("DOMContentLoaded", function () {
   const adminHeader = document.querySelector(".administrator-header"); // Sélection de l'admin header
   const modalTrigger = document.querySelector(".js-modal"); // Sélection du bouton d'ouverture de la modal
   const modalTriggerIcon = document.querySelector(".modal-icon");
+  const filter = document.querySelector(".filters");
 
   function checkLoginStatus() {
     const token = localStorage.getItem("token");
@@ -131,6 +125,8 @@ document.addEventListener("DOMContentLoaded", function () {
       // Afficher les éléments réservés aux administrateurs
       if (adminHeader) adminHeader.style.display = "flex";
       if (modalTrigger) modalTrigger.style.display = "flex";
+      // Filtres cachées pour le mode administrateur
+      if (filter) filter.style.display = "none";
     } else {
       // L'utilisateur n'est pas connecté
       loginLink.textContent = "login";
@@ -143,4 +139,40 @@ document.addEventListener("DOMContentLoaded", function () {
       if (modalTriggerIcon) modalTriggerIcon.style.display = "none";
     }
   }
+  function logout(event) {
+    event.preventDefault(); // Empêche la navigation
+    localStorage.removeItem("token"); // Supprime le token
+    window.location.reload(); // Recharge la page
+  }
+
+  checkLoginStatus();
+});
+
+//  Écoute l'événement pour ajouter un projet directement sans rechargement
+window.addEventListener("addProjectToGallery", (event) => {
+  const newProject = event.detail;
+
+  //  Vérifier si le projet est déjà dans `cachedWorks`
+  const exists = cachedWorks.some((work) => work.id === newProject.id);
+  if (exists) {
+    console.warn("⚠️ Projet déjà présent, annulation de l'ajout :", newProject);
+    return;
+  }
+
+  //  Ajouter directement le projet à la galerie principale
+  const gallery = document.querySelector(".gallery");
+  const figure = document.createElement("figure");
+  figure.innerHTML = `
+        <img src="${newProject.imageUrl}" alt="${newProject.title}" loading="lazy">
+        <figcaption>${newProject.title}</figcaption>
+        `;
+  gallery.appendChild(figure);
+
+  //  Ajouter le projet au cache pour éviter qu'il disparaisse au filtre
+  cachedWorks.push(newProject);
+});
+
+window.addEventListener("updateGalleryAfterDeletion", () => {
+  console.log("✅ Suppression confirmée, mise à jour de la galerie...");
+  displayWorks(cachedWorks);
 });
