@@ -127,14 +127,14 @@ function updateModalContent(step) {
               <p id="upload-text">+ Ajouter une photo</p>
               <p class="upload-info">jpg, png : 4mo max</p>
             </label>
-            <input type="file" id="file" accept="image/*" style="display: none;">
+            <input type="file" id="file" accept="image/*" style="display: none;" autocomplete="off">
           </div>
           <div class="input-upload">
             <label for="title">Titre</label>
-            <input type="text" id="title" required>
+            <input type="text" id="title" required autocomplete="off">
             <label for="category">Catégories</label>
             <div class="select-wrapper">
-              <select id="category" required></select>
+              <select id="category" required autocomplete="off"></select>
               <img src="/FrontEnd/assets/icons/chevron-categories.svg" alt="chevron" class="chevron-icon">
             </div>
           </div>

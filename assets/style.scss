@@ -126,7 +126,7 @@ main {
 
       #email,
       #password {
-        height: 51px;
+        padding: 18px;
         box-shadow: 0px 4px 14px 0px rgba(0, 0, 0, 0.09);
         border: none;
       }
@@ -278,7 +278,6 @@ main {
     }
 
     input {
-      height: 50px;
       font-size: 1.2em;
     }
 
@@ -290,6 +289,7 @@ main {
 
     input,
     textarea {
+      padding: 15px;
       border: none;
       box-shadow: 0 4px 14px rgba(0, 0, 0, 0.09);
     }
@@ -479,13 +479,13 @@ footer {
           }
 
           #category {
-            appearance: none; /* Supprime le style par défaut du navigateur */
+            appearance: none; /* Supprime le style par défaut du selecteur */
             -webkit-appearance: none;
             -moz-appearance: none;
             width: 420px;
           }
 
-          /* Positionner le SVG comme chevron */
+          /* Positionner le chevron */
           .chevron-icon {
             position: relative;
             left: 375px;

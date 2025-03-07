@@ -125,7 +125,7 @@ main .login form {
 }
 main .login form #email,
 main .login form #password {
-  height: 51px;
+  padding: 18px;
   box-shadow: 0px 4px 14px 0px rgba(0, 0, 0, 0.09);
   border: none;
 }
@@ -248,7 +248,6 @@ main #contact label {
   margin: 2em 0 0.5em;
 }
 main #contact input {
-  height: 50px;
   font-size: 1.2em;
 }
 main #contact input[type=submit] {
@@ -258,6 +257,7 @@ main #contact input[type=submit] {
 }
 main #contact input,
 main #contact textarea {
+  padding: 15px;
   border: none;
   box-shadow: 0 4px 14px rgba(0, 0, 0, 0.09);
 }
@@ -415,7 +415,7 @@ footer ul {
   display: flex;
   flex-direction: column;
   gap: 5px;
-  /* Positionner le SVG comme chevron */
+  /* Positionner le chevron */
 }
 .modal .modal-content .modal-body .add-photo-form .input-upload label {
   margin-top: 15px;
@@ -428,7 +428,7 @@ footer ul {
   color: rgb(61, 61, 61);
 }
 .modal .modal-content .modal-body .add-photo-form .input-upload #category {
-  appearance: none; /* Supprime le style par défaut du navigateur */
+  appearance: none; /* Supprime le style par défaut du selecteur */
   -webkit-appearance: none;
   -moz-appearance: none;
   width: 420px;
