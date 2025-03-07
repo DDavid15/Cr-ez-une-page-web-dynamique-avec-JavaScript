@@ -13,7 +13,7 @@ const openModal = function (e) {
   }
 
   modal.style.display = "flex";
-  modal.removeAttribute("aria-hidden");
+  modal.removeAttribute("inert");
   modal.setAttribute("aria-modal", "true");
 
   // Met le focus sur le premier élément focusable
@@ -49,7 +49,7 @@ const closeModal = function (e) {
     e.target.classList.contains("close-modal")
   ) {
     modal.style.display = "none";
-    modal.setAttribute("aria-hidden", "true");
+    modal.setAttribute("inert", "");
     modal.removeAttribute("aria-modal");
 
     modal.removeEventListener("click", closeModal);
@@ -111,6 +111,7 @@ function updateModalContent(step) {
     nextButton.value = "Ajouter une photo";
     nextButton.disabled = false;
     nextButton.classList.remove("disabled-step-1");
+    nextButton.classList.add("activate-button");
     prevButton.style.display = "none";
   } else {
     prevButton.style.display = "inline-block";
@@ -144,6 +145,7 @@ function updateModalContent(step) {
     nextButton.value = "Valider";
     nextButton.disabled = true;
     nextButton.classList.add("disabled-step-1");
+    nextButton.classList.remove("activate-button");
 
     nextButton.removeEventListener("click", submitForm);
     nextButton.addEventListener("click", submitForm);
@@ -245,8 +247,6 @@ async function deleteProject(event) {
       mainGalleryFigure.remove();
     }
 
-    console.log(`✅ Projet ${projectId} supprimé avec succès`);
-
     // 4️⃣ Mise à jour unique de la galerie principale
     displayWorks(cachedWorks);
   } catch (error) {
@@ -315,6 +315,8 @@ function setupFormValidation() {
       errorMessage.textContent = "Veuillez ajouter une image valide.";
       submitButton.disabled = true;
       submitButton.classList.add("disabled-step-1"); // Ajout d'une classe de désactivation
+      submitButton.classList.remove("activate-button");
+
       return;
     }
 
@@ -323,6 +325,8 @@ function setupFormValidation() {
       errorMessage.textContent = "Tous les champs sont requis !";
       submitButton.disabled = true;
       submitButton.classList.add("disabled-step-1");
+      submitButton.classList.remove("activate-button");
+
       return;
     }
 
@@ -330,6 +334,7 @@ function setupFormValidation() {
     errorMessage.style.display = "none";
     submitButton.disabled = false;
     submitButton.classList.remove("disabled-step-1"); // Suppression de la classe de désactivation
+    submitButton.classList.add("activate-button");
   }
 
   // Écoute des changements sur les champs

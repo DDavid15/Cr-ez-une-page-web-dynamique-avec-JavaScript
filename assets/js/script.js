@@ -40,8 +40,6 @@ function displayWorks(works) {
       `;
     gallery.appendChild(figure);
   });
-
-  console.log("✅ Galerie mise à jour avec :", works.length, "projets");
 }
 
 // Fonction pour extraire les catégories et créer les boutons de filtre
@@ -107,7 +105,7 @@ document.addEventListener("DOMContentLoaded", fetchWorks);
 
 //Gérer l'affichage admin
 document.addEventListener("DOMContentLoaded", function () {
-  const loginLink = document.querySelector(".login-header"); // Sélection du bouton Login
+  const loginLink = document.querySelector(".login"); // Sélection du bouton Login
   const adminHeader = document.querySelector(".administrator-header"); // Sélection de l'admin header
   const modalTrigger = document.querySelector(".js-modal"); // Sélection du bouton d'ouverture de la modal
   const modalTriggerIcon = document.querySelector(".modal-icon");
@@ -173,6 +171,5 @@ window.addEventListener("addProjectToGallery", (event) => {
 });
 
 window.addEventListener("updateGalleryAfterDeletion", () => {
-  console.log("✅ Suppression confirmée, mise à jour de la galerie...");
   displayWorks(cachedWorks);
 });
