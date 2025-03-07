@@ -415,15 +415,29 @@ footer ul {
   display: flex;
   flex-direction: column;
   gap: 5px;
+  /* Positionner le SVG comme chevron */
 }
 .modal .modal-content .modal-body .add-photo-form .input-upload label {
   margin-top: 15px;
 }
 .modal .modal-content .modal-body .add-photo-form .input-upload #title,
 .modal .modal-content .modal-body .add-photo-form .input-upload #category {
-  height: 51px;
+  padding: 20px;
   box-shadow: 0px 4px 14px 0px rgba(0, 0, 0, 0.09);
   border: none;
+  color: rgb(61, 61, 61);
+}
+.modal .modal-content .modal-body .add-photo-form .input-upload #category {
+  appearance: none; /* Supprime le style par défaut du navigateur */
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  width: 420px;
+}
+.modal .modal-content .modal-body .add-photo-form .input-upload .chevron-icon {
+  position: relative;
+  left: 375px;
+  bottom: 32px;
+  pointer-events: none;
 }
 .modal .modal-content .modal-body .error-message {
   text-align: center;

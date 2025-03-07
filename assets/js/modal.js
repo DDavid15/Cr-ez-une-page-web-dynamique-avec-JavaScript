@@ -133,7 +133,10 @@ function updateModalContent(step) {
             <label for="title">Titre</label>
             <input type="text" id="title" required>
             <label for="category">Catégories</label>
-            <select id="category" required></select>
+            <div class="select-wrapper">
+              <select id="category" required></select>
+              <img src="/FrontEnd/assets/icons/chevron-categories.svg" alt="chevron" class="chevron-icon">
+            </div>
           </div>
         </form>
         <p class="error-message" style="color: red; display: none;"></p>
@@ -261,7 +264,7 @@ document
     btn.addEventListener("click", deleteProject);
   });
 
-//  Injection des catégories dans la modale step 2
+//  Injection des catégories dans la modale step 1
 function injectCategoryModal(works) {
   const selector = document.querySelector("#category");
   if (!selector) return;
