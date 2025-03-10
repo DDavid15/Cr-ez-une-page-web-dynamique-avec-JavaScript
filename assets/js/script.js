@@ -10,7 +10,7 @@ async function fetchWorks() {
   }
 
   try {
-    showLoading(); // 🕒 Affiche un indicateur de chargement
+    showLoading(); // Affiche un indicateur de chargement
 
     const response = await fetch("http://localhost:5678/api/works");
     if (!response.ok) throw new Error(`Erreur : ${response.statusText}`);
@@ -30,7 +30,7 @@ async function fetchWorks() {
 // Fonction pour afficher les travaux dans la galerie
 function displayWorks(works) {
   const gallery = document.querySelector(".gallery");
-  gallery.innerHTML = ""; // ✅ Nettoyer l'ancienne galerie avant d'afficher les nouveaux projets
+  gallery.innerHTML = ""; // Nettoyer l'ancienne galerie avant d'afficher les nouveaux projets
 
   works.forEach((work) => {
     const figure = document.createElement("figure");
@@ -149,13 +149,6 @@ document.addEventListener("DOMContentLoaded", function () {
 //  Écoute l'événement pour ajouter un projet directement sans rechargement
 window.addEventListener("addProjectToGallery", (event) => {
   const newProject = event.detail;
-
-  //  Vérifier si le projet est déjà dans `cachedWorks`
-  const exists = cachedWorks.some((work) => work.id === newProject.id);
-  if (exists) {
-    console.warn("⚠️ Projet déjà présent, annulation de l'ajout :", newProject);
-    return;
-  }
 
   //  Ajouter directement le projet à la galerie principale
   const gallery = document.querySelector(".gallery");

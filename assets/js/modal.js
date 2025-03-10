@@ -216,7 +216,7 @@ async function deleteProject(event) {
   if (!projectId) return;
 
   try {
-    // 1️⃣ Envoyer la requête API AVANT de modifier le DOM
+    // 1 Envoyer la requête API AVANT de modifier le DOM
     const response = await fetch(
       `http://localhost:5678/api/works/${projectId}`,
       {
@@ -232,10 +232,10 @@ async function deleteProject(event) {
       throw new Error("Erreur lors de la suppression");
     }
 
-    // 2️⃣ Mettre à jour le cache (supprimer du tableau `cachedWorks`)
+    // 2 Mettre à jour le cache (supprimer du tableau `cachedWorks`)
     cachedWorks = cachedWorks.filter((work) => work.id !== projectId);
 
-    // 3️⃣ Supprimer l’élément du DOM après la confirmation de l’API
+    // 3 Supprimer l’élément du DOM après la confirmation de l’API
     const modalGalleryFigure = document.querySelector(
       `.modal-gallery figure[data-id='${projectId}']`
     );
@@ -250,7 +250,7 @@ async function deleteProject(event) {
       mainGalleryFigure.remove();
     }
 
-    // 4️⃣ Mise à jour unique de la galerie principale
+    // 4 Mise à jour unique de la galerie principale
     displayWorks(cachedWorks);
   } catch (error) {
     console.error("❌ Impossible de supprimer le projet :", error);
@@ -333,7 +333,7 @@ function setupFormValidation() {
       return;
     }
 
-    // ✅ Tout est valide, suppression des erreurs et activation du bouton
+    // Tout est valide, suppression des erreurs et activation du bouton
     errorMessage.style.display = "none";
     submitButton.disabled = false;
     submitButton.classList.remove("disabled-step-1"); // Suppression de la classe de désactivation
@@ -466,20 +466,20 @@ async function submitForm(event) {
       throw new Error("L'API n'a pas retourné d'ID valide.");
     }
 
-    // ✅ Ajouter le projet UNIQUEMENT s'il n'est pas déjà dans cachedWorks
+    // Ajouter le projet UNIQUEMENT s'il n'est pas déjà dans cachedWorks
     if (!cachedWorks.some((work) => work.id === newProject.id)) {
       cachedWorks.push(newProject);
     }
 
-    // ✅ Mise à jour immédiate de la galerie
+    // Mise à jour immédiate de la galerie
     displayWorks(cachedWorks);
 
-    // ✅ Affichage du message de succès
+    // Affichage du message de succès
     successMessage.textContent = "Projet ajouté avec succès !";
     successMessage.style.display = "block";
     errorMessage.style.display = "none";
 
-    // ✅ Réinitialisation du formulaire après ajout
+    // Réinitialisation du formulaire après ajout
     resetForm();
   } catch (error) {
     console.error("❌ Erreur lors de l'envoi du formulaire :", error);
@@ -497,7 +497,7 @@ function resetForm() {
   document.getElementById("category").value = "";
   document.querySelector(".next-button").disabled = true;
 
-  // ✅ Réinitialisation de l'aperçu de l'image
+  // Réinitialisation de l'aperçu de l'image
   const uploadTrigger = document.getElementById("upload-trigger");
   if (uploadTrigger) {
     uploadTrigger.innerHTML = `

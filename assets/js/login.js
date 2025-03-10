@@ -8,7 +8,7 @@ loginForm.addEventListener("submit", async (event) => {
   const password = document.getElementById("password").value;
 
   try {
-    // ✅ ENVOI de la requête POST avec fetch
+    //  ENVOI de la requête POST avec fetch
     const response = await fetch("http://localhost:5678/api/users/login", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -18,10 +18,10 @@ loginForm.addEventListener("submit", async (event) => {
     if (response.ok) {
       const data = await response.json();
 
-      // ✅ Stocke le token pour les futures requêtes
+      //  Stocke le token pour les futures requêtes
       localStorage.setItem("token", data.token);
 
-      // ✅ Redirige vers la page d'accueil
+      //  Redirige vers la page d'accueil
       window.location.href = "index.html";
     } else if (response.status === 401) {
       errorMessage.textContent = "Erreur dans l’identifiant ou le mot de passe";
