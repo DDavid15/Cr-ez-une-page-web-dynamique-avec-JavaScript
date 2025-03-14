@@ -103,7 +103,7 @@ function showError(message) {
 // Lancement du script lorsque la page est chargée
 document.addEventListener("DOMContentLoaded", fetchWorks);
 
-//Gérer l'affichage admin
+// Gérer l'affichage admin
 document.addEventListener("DOMContentLoaded", function () {
   const loginLink = document.querySelector(".login"); // Sélection du bouton Login
   const adminHeader = document.querySelector(".administrator-header"); // Sélection de l'admin header
@@ -111,38 +111,66 @@ document.addEventListener("DOMContentLoaded", function () {
   const modalTriggerIcon = document.querySelector(".modal-icon");
   const filter = document.querySelector(".filters");
 
+  // Vérifier si le token JWT est valide (sans appeler l'API)
+  function isTokenValid(token) {
+    try {
+      const payloadBase64 = token.split(".")[1]; // On récupère la partie payload
+      const decodedPayload = JSON.parse(atob(payloadBase64)); // Décodage en JSON
+      const exp = decodedPayload.exp; // Récupération de la date d'expiration
+
+      if (!exp) return false; // Si pas d'expiration, c'est invalide
+
+      const now = Math.floor(Date.now() / 1000); // Temps actuel en secondes
+      return now < exp; // Retourne true si le token est encore valide
+    } catch (error) {
+      return false; // Si une erreur se produit, considère le token comme invalide
+    }
+  }
+
+  // Vérifier le statut de connexion
   function checkLoginStatus() {
     const token = localStorage.getItem("token");
-    if (token) {
-      // L'utilisateur est connecté
+
+    if (!token || !isTokenValid(token)) {
+      console.warn("Token invalide ou expiré, suppression en cours...");
+      localStorage.removeItem("token"); // Supprime le token s'il est invalide
+      applyAdminMode(false);
+      return;
+    }
+
+    applyAdminMode(true); // Active le mode admin si le token est valide
+  }
+
+  // Gérer l'affichage du mode admin
+  function applyAdminMode(isAdmin) {
+    if (isAdmin) {
       loginLink.textContent = "logout";
       loginLink.classList.add("logout");
-      loginLink.href = "#"; // Désactive le lien vers login.html
+      loginLink.href = "#";
       loginLink.addEventListener("click", logout);
 
-      // Afficher les éléments réservés aux administrateurs
       if (adminHeader) adminHeader.style.display = "flex";
       if (modalTrigger) modalTrigger.style.display = "flex";
-      // Filtres cachées pour le mode administrateur
       if (filter) filter.style.display = "none";
     } else {
-      // L'utilisateur n'est pas connecté
       loginLink.textContent = "login";
       loginLink.classList.remove("logout");
-      loginLink.href = "login.html"; // Redirige vers la page de connexion
+      loginLink.href = "login.html";
 
-      // Cacher les éléments réservés aux administrateurs
       if (adminHeader) adminHeader.style.display = "none";
       if (modalTrigger) modalTrigger.style.display = "none";
       if (modalTriggerIcon) modalTriggerIcon.style.display = "none";
     }
   }
+
+  // Fonction de déconnexion
   function logout(event) {
     event.preventDefault(); // Empêche la navigation
     localStorage.removeItem("token"); // Supprime le token
     window.location.reload(); // Recharge la page
   }
 
+  // Vérifier le statut de connexion au chargement
   checkLoginStatus();
 });
 
