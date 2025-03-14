@@ -166,3 +166,32 @@ window.addEventListener("addProjectToGallery", (event) => {
 window.addEventListener("updateGalleryAfterDeletion", () => {
   displayWorks(cachedWorks);
 });
+
+// Redirection depuis la page de login
+document.addEventListener("DOMContentLoaded", () => {
+  // Gestion de l'ancre #contact
+  if (window.location.hash === "#contact") {
+    const checkContactLoaded = setInterval(() => {
+      const contactSection = document.getElementById("contact");
+
+      if (contactSection && contactSection.offsetHeight > 0) {
+        contactSection.scrollIntoView();
+        clearInterval(checkContactLoaded);
+      }
+    }, 300);
+  }
+
+  // Gestion de l'ancre #portfolio (projets)
+  if (window.location.hash === "#portfolio") {
+    const checkProjectsLoaded = setInterval(() => {
+      const portfolioSection = document.getElementById("portfolio");
+      const projectsLoaded =
+        document.querySelectorAll(".gallery figure").length > 0;
+
+      if (portfolioSection && projectsLoaded) {
+        portfolioSection.scrollIntoView();
+        clearInterval(checkProjectsLoaded);
+      }
+    }, 300);
+  }
+});

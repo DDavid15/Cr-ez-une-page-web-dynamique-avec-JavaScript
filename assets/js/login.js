@@ -23,10 +23,8 @@ loginForm.addEventListener("submit", async (event) => {
 
       //  Redirige vers la page d'accueil
       window.location.href = "index.html";
-    } else if (response.status === 401) {
+    } else if (response.status === 401 || response.status === 404) {
       errorMessage.textContent = "Erreur dans l’identifiant ou le mot de passe";
-    } else if (response.status === 404) {
-      errorMessage.textContent = "Utilisateur non trouvé";
     } else {
       errorMessage.textContent = "Une erreur est survenue. Veuillez réessayer.";
     }

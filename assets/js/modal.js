@@ -496,6 +496,8 @@ function resetForm() {
   document.getElementById("title").value = "";
   document.getElementById("category").value = "";
   document.querySelector(".next-button").disabled = true;
+  document.querySelector(".next-button").classList.remove("activate-button");
+  document.querySelector(".next-button").classList.add("disabled-step-1");
 
   // Réinitialisation de l'aperçu de l'image
   const uploadTrigger = document.getElementById("upload-trigger");
