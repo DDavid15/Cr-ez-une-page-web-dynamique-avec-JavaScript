@@ -141,7 +141,7 @@ function updateModalContent(step) {
         </form>
         <p class="error-message" style="color: red; display: none;"></p>
       `;
-    fetchWork().then(injectCategoryModal);
+    fetchCategory().then(injectCategoryModal);
     setupFileUpload();
     setupFormValidation();
 
@@ -264,8 +264,19 @@ document
     btn.addEventListener("click", deleteProject);
   });
 
+//  Récupération des catégories depuis l'API
+async function fetchCategory() {
+  try {
+    const response = await fetch("http://localhost:5678/api/categories");
+    if (!response.ok) throw new Error(`Erreur : ${response.statusText}`);
+    return await response.json();
+  } catch (error) {
+    console.error("Erreur lors de la récupération des categories :", error);
+    return [];
+  }
+}
 //  Injection des catégories dans la modale step 1
-function injectCategoryModal(works) {
+function injectCategoryModal(cat) {
   const selector = document.querySelector("#category");
   if (!selector) return;
 
@@ -273,9 +284,9 @@ function injectCategoryModal(works) {
 
   const categories = new Map();
 
-  works.forEach((work) => {
-    if (work.category && work.category.id && work.category.name) {
-      categories.set(work.category.id, work.category.name);
+  cat.forEach((work) => {
+    if (work.id && work.name) {
+      categories.set(work.id, work.name);
     }
   });
 

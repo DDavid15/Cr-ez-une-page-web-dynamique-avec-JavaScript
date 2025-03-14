@@ -169,29 +169,46 @@ window.addEventListener("updateGalleryAfterDeletion", () => {
 
 // Redirection depuis la page de login
 document.addEventListener("DOMContentLoaded", () => {
-  // Gestion de l'ancre #contact
-  if (window.location.hash === "#contact") {
-    const checkContactLoaded = setInterval(() => {
-      const contactSection = document.getElementById("contact");
+  const scrollToSection = (sectionId, checkCondition) => {
+    const checkLoaded = setInterval(() => {
+      const section = document.getElementById(sectionId);
 
-      if (contactSection && contactSection.offsetHeight > 0) {
-        contactSection.scrollIntoView();
-        clearInterval(checkContactLoaded);
+      if (section && checkCondition()) {
+        section.scrollIntoView();
+        clearInterval(checkLoaded);
+
+        // Supprime l’ancre de l’URL après le scroll
+        history.replaceState(null, null, window.location.pathname);
+
+        // Enregistre en sessionStorage que le scroll a été effectué
+        sessionStorage.setItem("scrolledToSection", sectionId);
       }
     }, 300);
+  };
+
+  // Vérifie si l'URL contient #contact ou #portfolio et si le scroll n'a pas déjà été fait
+  if (
+    window.location.hash === "#contact" &&
+    sessionStorage.getItem("scrolledToSection") !== "contact"
+  ) {
+    scrollToSection(
+      "contact",
+      () => document.getElementById("contact").offsetHeight > 0
+    );
   }
 
-  // Gestion de l'ancre #portfolio (projets)
-  if (window.location.hash === "#portfolio") {
-    const checkProjectsLoaded = setInterval(() => {
-      const portfolioSection = document.getElementById("portfolio");
-      const projectsLoaded =
-        document.querySelectorAll(".gallery figure").length > 0;
-
-      if (portfolioSection && projectsLoaded) {
-        portfolioSection.scrollIntoView();
-        clearInterval(checkProjectsLoaded);
-      }
-    }, 300);
+  if (
+    window.location.hash === "#portfolio" &&
+    sessionStorage.getItem("scrolledToSection") !== "portfolio"
+  ) {
+    scrollToSection(
+      "portfolio",
+      () => document.querySelectorAll(".gallery figure").length > 0
+    );
   }
+
+  // Efface la mémoire du scroll si l'utilisateur navigue sans ancre
+  window.addEventListener("beforeunload", () => {
+    sessionStorage.removeItem("scrolledToSection");
+  });
 });
