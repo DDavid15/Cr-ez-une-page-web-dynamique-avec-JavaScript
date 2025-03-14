@@ -107,61 +107,112 @@ document.addEventListener("DOMContentLoaded", fetchWorks);
 document.addEventListener("DOMContentLoaded", function () {
   const loginLink = document.querySelector(".login"); // Sélection du bouton Login
   const adminHeader = document.querySelector(".administrator-header"); // Sélection de l'admin header
-  const modalTrigger = document.querySelector(".js-modal"); // Sélection du bouton d'ouverture de la modal
-  const modalTriggerIcon = document.querySelector(".modal-icon");
+  const modal = document.querySelector(".modal-container"); // Sélection de la modal
   const filter = document.querySelector(".filters");
 
-  // Vérifier si le token JWT est valide (sans appeler l'API)
-  function isTokenValid(token) {
+  // Vérifier si le token JWT est valide
+  async function isTokenValid(token) {
     try {
-      const payloadBase64 = token.split(".")[1]; // On récupère la partie payload
-      const decodedPayload = JSON.parse(atob(payloadBase64)); // Décodage en JSON
-      const exp = decodedPayload.exp; // Récupération de la date d'expiration
+      //  Vérification expiration du token
+      const payloadBase64 = token.split(".")[1];
+      const decodedPayload = JSON.parse(atob(payloadBase64));
+      const now = Math.floor(Date.now() / 1000);
 
-      if (!exp) return false; // Si pas d'expiration, c'est invalide
+      if (!decodedPayload.exp || now >= decodedPayload.exp) {
+        console.warn("Token expiré !");
+        return false;
+      }
 
-      const now = Math.floor(Date.now() / 1000); // Temps actuel en secondes
-      return now < exp; // Retourne true si le token est encore valide
+      //  Vérification avec `DELETE /works/{id}`, mais avec un ID inexistant
+      const testProjectId = 999999; // Un ID très grand qui n’existe pas
+      const response = await fetch(
+        `http://localhost:5678/api/works/${testProjectId}`,
+        {
+          method: "DELETE",
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+        }
+      );
+
+      //  Si 401, alors le token est invalide
+      if (response.status === 401) {
+        localStorage.removeItem("token"); //  Supprime immédiatement le token falsifié
+        return false;
+      }
+
+      //  Si 404, l’ID n’existe pas mais le token est bon
+      if (response.status === 404) {
+        return true;
+      }
+
+      //  Si 200 ou 204, alors le token est valide (mais attention, ça supprime un projet)
+      if (response.status === 200 || response.status === 204) {
+        return true;
+      }
+
+      return false; // Tout autre code = problème
     } catch (error) {
-      return false; // Si une erreur se produit, considère le token comme invalide
+      return false;
     }
   }
 
   // Vérifier le statut de connexion
-  function checkLoginStatus() {
+  async function checkLoginStatus() {
     const token = localStorage.getItem("token");
 
-    if (!token || !isTokenValid(token)) {
-      console.warn("Token invalide ou expiré, suppression en cours...");
-      localStorage.removeItem("token"); // Supprime le token s'il est invalide
-      applyAdminMode(false);
-      return;
-    }
+    if (!token || !(await isTokenValid(token))) {
+      // Vérifier si on est sur une page nécessitant une connexion
+      const isAdminPage =
+        window.location.pathname.includes("admin") ||
+        window.location.pathname.includes("dashboard");
 
-    applyAdminMode(true); // Active le mode admin si le token est valide
+      localStorage.removeItem("token"); //  Supprimer immédiatement le token
+
+      if (isAdminPage) {
+        console.warn("Redirection vers la page de connexion...");
+        window.location.href = "/login.html";
+      } else {
+        applyAdminMode(false); //  Désactiver le mode admin sans redirection
+      }
+    } else {
+      applyAdminMode(true); //  Activer le mode admin si le token est valide
+    }
   }
 
-  // Gérer l'affichage du mode admin
+  // Gérer l'affichage du mode admin de manière sécurisée
   function applyAdminMode(isAdmin) {
     if (isAdmin) {
       loginLink.textContent = "logout";
       loginLink.classList.add("logout");
       loginLink.href = "#";
-      loginLink.addEventListener("click", logout);
+
+      // Vérifier si l'événement `click` est déjà ajouté avant d'ajouter `logout`
+      if (!loginLink.hasAttribute("data-logout")) {
+        loginLink.setAttribute("data-logout", "true");
+        loginLink.addEventListener("click", logout);
+      }
 
       if (adminHeader) adminHeader.style.display = "flex";
-      if (modalTrigger) modalTrigger.style.display = "flex";
+      if (modal) modal.style.display = "flex";
       if (filter) filter.style.display = "none";
     } else {
       loginLink.textContent = "login";
       loginLink.classList.remove("logout");
       loginLink.href = "login.html";
 
-      if (adminHeader) adminHeader.style.display = "none";
-      if (modalTrigger) modalTrigger.style.display = "none";
-      if (modalTriggerIcon) modalTriggerIcon.style.display = "none";
+      //  Sécurisation : Supprimer complètement les éléments admin du DOM
+      if (adminHeader) adminHeader.remove();
+      if (modal) modal.remove();
     }
   }
+
+  // Vérifier le statut de connexion au chargement
+  document.addEventListener("DOMContentLoaded", () => {
+    applyAdminMode(false); //  Mode admin désactivé par défaut
+    checkLoginStatus(); //  Vérifier si l'utilisateur est connecté
+  });
 
   // Fonction de déconnexion
   function logout(event) {
