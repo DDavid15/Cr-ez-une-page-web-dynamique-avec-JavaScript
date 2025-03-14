@@ -106,8 +106,17 @@ function updateModalContent(step) {
 
   if (step === 0) {
     titleModal.textContent = "Galerie photo";
-    modalBody.innerHTML = `<div class="modal-gallery"></div>`;
+
+    // Nettoyer le contenu
+    modalBody.innerHTML = "";
+
+    // Ajouter dynamiquement la galerie
+    const galleryDiv = document.createElement("div");
+    galleryDiv.classList.add("modal-gallery");
+    modalBody.appendChild(galleryDiv);
+
     fetchWork().then(injectGalleryModal);
+
     nextButton.value = "Ajouter une photo";
     nextButton.disabled = false;
     nextButton.classList.remove("disabled-step-1");
@@ -119,28 +128,91 @@ function updateModalContent(step) {
 
   if (step === 1) {
     titleModal.textContent = "Ajout photo";
-    modalBody.innerHTML = `
-        <form class="add-photo-form">
-          <div class="file-upload">
-            <label for="file" id="upload-trigger" class="upload-container">
-              <img id="preview-icon" src="/FrontEnd/assets/icons/upload-icon.svg" alt="icone d'upload">
-              <p id="upload-text">+ Ajouter une photo</p>
-              <p class="upload-info">jpg, png : 4mo max</p>
-            </label>
-            <input type="file" id="file" accept="image/*" style="display: none;" autocomplete="off">
-          </div>
-          <div class="input-upload">
-            <label for="title">Titre</label>
-            <input type="text" id="title" required autocomplete="off">
-            <label for="category">Catégories</label>
-            <div class="select-wrapper">
-              <select id="category" required autocomplete="off"></select>
-              <img src="/FrontEnd/assets/icons/chevron-categories.svg" alt="chevron" class="chevron-icon">
-            </div>
-          </div>
-        </form>
-        <p class="error-message" style="color: red; display: none;"></p>
-      `;
+
+    // Nettoyer le contenu
+    modalBody.innerHTML = "";
+
+    // Création du formulaire dynamiquement
+    const form = document.createElement("form");
+    form.classList.add("add-photo-form");
+
+    // Bloc d'upload de fichier
+    const fileUploadDiv = document.createElement("div");
+    fileUploadDiv.classList.add("file-upload");
+
+    const label = document.createElement("label");
+    label.htmlFor = "file";
+    label.id = "upload-trigger";
+    label.classList.add("upload-container");
+
+    const img = document.createElement("img");
+    img.id = "preview-icon";
+    img.src = "/FrontEnd/assets/icons/upload-icon.svg";
+    img.alt = "icone d'upload";
+
+    const p1 = document.createElement("p");
+    p1.id = "upload-text";
+    p1.textContent = "+ Ajouter une photo";
+
+    const p2 = document.createElement("p");
+    p2.classList.add("upload-info");
+    p2.textContent = "jpg, png : 4mo max";
+
+    label.append(img, p1, p2);
+    fileUploadDiv.appendChild(label);
+
+    const fileInput = document.createElement("input");
+    fileInput.type = "file";
+    fileInput.id = "file";
+    fileInput.accept = "image/*";
+    fileInput.style.display = "none";
+    fileUploadDiv.appendChild(fileInput);
+
+    // Bloc d'input pour titre et catégorie
+    const inputDiv = document.createElement("div");
+    inputDiv.classList.add("input-upload");
+
+    const titleLabel = document.createElement("label");
+    titleLabel.htmlFor = "title";
+    titleLabel.textContent = "Titre";
+
+    const titleInput = document.createElement("input");
+    titleInput.type = "text";
+    titleInput.id = "title";
+    titleInput.required = true;
+    titleInput.autocomplete = "off";
+
+    const categoryLabel = document.createElement("label");
+    categoryLabel.htmlFor = "category";
+    categoryLabel.textContent = "Catégories";
+
+    const selectWrapper = document.createElement("div");
+    selectWrapper.classList.add("select-wrapper");
+
+    const select = document.createElement("select");
+    select.id = "category";
+    select.required = true;
+    select.autocomplete = "off";
+
+    const chevronImg = document.createElement("img");
+    chevronImg.src = "/FrontEnd/assets/icons/chevron-categories.svg";
+    chevronImg.alt = "chevron";
+    chevronImg.classList.add("chevron-icon");
+
+    selectWrapper.append(select, chevronImg);
+    inputDiv.append(titleLabel, titleInput, categoryLabel, selectWrapper);
+
+    // Message d'erreur
+    const errorMsg = document.createElement("p");
+    errorMsg.classList.add("error-message");
+    errorMsg.style.color = "red";
+    errorMsg.style.display = "none";
+
+    // Ajout des éléments au formulaire
+    form.append(fileUploadDiv, inputDiv);
+    modalBody.append(form, errorMsg);
+
+    // Initialisation des événements et données
     fetchCategory().then(injectCategoryModal);
     setupFileUpload();
     setupFormValidation();
