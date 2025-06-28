@@ -262,14 +262,22 @@ function injectGalleryModal(works) {
   gallery.innerHTML = "";
 
   works.forEach((work) => {
+    // Corriger les URLs localhost si besoin
+    let imageUrl = work.imageUrl;
+    if (imageUrl.startsWith("http://localhost")) {
+      imageUrl = imageUrl.replace("http://localhost:5678", window.location.origin);
+    }
+
     const figure = document.createElement("figure");
     figure.dataset.id = work.id;
 
-    figure.innerHTML = `<img src="${work.imageUrl}" alt="${work.title}" loading="lazy" style="width: 100%;">
-       <button class="delete-project" data-id="${work.id}">
-          <img src="/FrontEnd/assets/icons/trash.webp" alt="Supprimer" />
-        </button>
-      `;
+    figure.innerHTML = `
+      <img src="${imageUrl}" alt="${work.title}" loading="lazy" style="width: 100%;">
+      <button class="delete-project" data-id="${work.id}">
+        <img src="/FrontEnd/assets/icons/trash.webp" alt="Supprimer" />
+      </button>
+    `;
+
     gallery.appendChild(figure);
   });
 
