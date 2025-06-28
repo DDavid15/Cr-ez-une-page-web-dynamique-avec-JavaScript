@@ -529,3 +529,39 @@ footer {
     }
   }
 }
+
+@media (max-width: 768px) {
+  header .container {
+    flex-direction: column;
+    height: auto;
+    gap: 1em;
+  }
+  header .container ul {
+    gap: 20px;
+  }
+  main #introduction {
+    flex-direction: column;
+    gap: 30px;
+    margin: 50px 0;
+  }
+  main #introduction figure img {
+    width: 100%;
+    max-width: 300px;
+  }
+  main #introduction article {
+    width: 90%;
+    align-items: center;
+  }
+  main #portfolio .gallery {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  main #contact {
+    width: 90%;
+  }
+}
+
+@media (max-width: 480px) {
+  main #portfolio .gallery {
+    grid-template-columns: 1fr;
+  }
+}
