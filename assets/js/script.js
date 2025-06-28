@@ -12,7 +12,7 @@ async function fetchWorks() {
   try {
     showLoading(); // Affiche un indicateur de chargement
 
-    const response = await fetch("http://localhost:5678/api/works");
+    const response = await fetch("https://backend-for-p4-website.onrender.com/api/works");
     if (!response.ok) throw new Error(`Erreur : ${response.statusText}`);
 
     cachedWorks = await response.json();
@@ -126,7 +126,7 @@ document.addEventListener("DOMContentLoaded", function () {
       //  Vérification avec `DELETE /works/{id}`, mais avec un ID inexistant
       const testProjectId = 999999; // Un ID très grand qui n’existe pas
       const response = await fetch(
-        `http://localhost:5678/api/works/${testProjectId}`,
+        `https://backend-for-p4-website.onrender.com/api/works/${testProjectId}`,
         {
           method: "DELETE",
           headers: {

@@ -245,7 +245,7 @@ document.querySelector(".prev-button").addEventListener("click", () => {
 //  Récupération des travaux depuis l'API
 async function fetchWork() {
   try {
-    const response = await fetch("http://localhost:5678/api/works");
+    const response = await fetch("https://backend-for-p4-website.onrender.com/api/works");
     if (!response.ok) throw new Error(`Erreur : ${response.statusText}`);
     return await response.json();
   } catch (error) {
@@ -290,7 +290,7 @@ async function deleteProject(event) {
   try {
     // 1 Envoyer la requête API AVANT de modifier le DOM
     const response = await fetch(
-      `http://localhost:5678/api/works/${projectId}`,
+      `https://backend-for-p4-website.onrender.com/api/works/${projectId}`,
       {
         method: "DELETE",
         headers: {
@@ -339,7 +339,7 @@ document
 //  Récupération des catégories depuis l'API
 async function fetchCategory() {
   try {
-    const response = await fetch("http://localhost:5678/api/categories");
+    const response = await fetch("https://backend-for-p4-website.onrender.com/api/categories");
     if (!response.ok) throw new Error(`Erreur : ${response.statusText}`);
     return await response.json();
   } catch (error) {
@@ -531,7 +531,7 @@ async function submitForm(event) {
   formData.append("category", parseInt(categoryInput.value, 10));
 
   try {
-    const response = await fetch("http://localhost:5678/api/works", {
+    const response = await fetch("https://backend-for-p4-website.onrender.com/api/works", {
       method: "POST",
       headers: { Authorization: `Bearer ${token}` },
       body: formData,
