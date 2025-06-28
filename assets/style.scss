@@ -558,6 +558,19 @@ footer {
   main #contact {
     width: 90%;
   }
+  .login form {
+    width: 100%;
+    padding: 0 1em;
+  }
+  .login form input[type="submit"] {
+    width: 100%;
+  }
+  .filters {
+    flex-wrap: wrap;
+  }
+  .filters button {
+    flex: 1 1 45%;
+  }
 }
 
 @media (max-width: 480px) {

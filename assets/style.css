@@ -190,11 +190,12 @@ main #portfolio .filters {
   display: flex;
   justify-content: center;
   gap: 0.5em;
+  margin: 1em;
 }
 main #portfolio .filters button {
   font-family: "Syne", sans-serif;
   font-weight: 700;
-  font-size: 1.2em;
+  font-size: 1em;
   color: #1d6154;
   background-color: rgb(255, 254, 248);
   border: 1px solid #1d6154;
@@ -493,6 +494,19 @@ footer ul {
   }
   main #contact {
     width: 90%;
+  }
+  main .login form {
+    width: 100%;
+    padding: 0 1em;
+  }
+  main .login form input[type=submit] {
+    width: 100%;
+  }
+  main #portfolio .filters {
+    flex-wrap: wrap;
+  }
+  main #portfolio .filters button {
+    flex: 1 1 45%;
   }
 }
 @media (max-width: 480px) {
