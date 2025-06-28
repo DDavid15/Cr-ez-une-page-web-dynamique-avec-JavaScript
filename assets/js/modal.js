@@ -147,7 +147,7 @@ function updateModalContent(step) {
 
     const img = document.createElement("img");
     img.id = "preview-icon";
-    img.src = "/FrontEnd/assets/icons/upload-icon.svg";
+    img.src = "/FrontEnd/assets/icons/upload-icon.webp";
     img.alt = "icone d'upload";
 
     const p1 = document.createElement("p");
@@ -195,7 +195,7 @@ function updateModalContent(step) {
     select.autocomplete = "off";
 
     const chevronImg = document.createElement("img");
-    chevronImg.src = "/FrontEnd/assets/icons/chevron-categories.svg";
+    chevronImg.src = "/FrontEnd/assets/icons/chevron-categories.webp";
     chevronImg.alt = "chevron";
     chevronImg.classList.add("chevron-icon");
 
@@ -267,7 +267,7 @@ function injectGalleryModal(works) {
 
     figure.innerHTML = `<img src="${work.imageUrl}" alt="${work.title}" loading="lazy" style="width: 100%;">
        <button class="delete-project" data-id="${work.id}">
-          <img src="/FrontEnd/assets/icons/trash.svg" alt="Supprimer" />
+          <img src="/FrontEnd/assets/icons/trash.webp" alt="Supprimer" />
         </button>
       `;
     gallery.appendChild(figure);
@@ -586,7 +586,7 @@ function resetForm() {
   const uploadTrigger = document.getElementById("upload-trigger");
   if (uploadTrigger) {
     uploadTrigger.innerHTML = `
-        <img id="preview-icon" src="/FrontEnd/assets/icons/upload-icon.svg" alt="icone d'upload">
+        <img id="preview-icon" src="/FrontEnd/assets/icons/upload-icon.webp" alt="icone d'upload">
         <p id="upload-text">+ Ajouter une photo</p>
         <p class="upload-info">jpg, png : 4mo max</p>
       `;
